@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Autofac" Version="4.9.1" />
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="4.4.0" />
+    <PackageReference Include="Dapper" Version="1.60.1" />
+    <PackageReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />
+  </ItemGroup>
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="wwwroot\client\css\getManagers.css" />
+    <_ContentIncludedByDefault Remove="Pages\Account\Login.cshtml" />
+    <_ContentIncludedByDefault Remove="Pages\Account\Register.cshtml" />
+    <_ContentIncludedByDefault Remove="Pages\Client\Index.cshtml" />
+    <_ContentIncludedByDefault Remove="wwwroot\images\banner1.svg" />
+    <_ContentIncludedByDefault Remove="wwwroot\images\banner2.svg" />
+    <_ContentIncludedByDefault Remove="wwwroot\images\banner3.svg" />
+  </ItemGroup>
+</Project>

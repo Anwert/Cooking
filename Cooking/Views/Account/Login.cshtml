@@ -1,0 +1,38 @@
+@model Cooking.Models.ViewModel.LoginModel
+@{
+	ViewBag.Title = "Login";
+}
+
+<br />
+<div class="container">
+	
+	<h2>Вход на сайт</h2>
+	
+	<a asp-action="Register" asp-controller="Account">Регистрация</a>
+	
+	@if(ViewData.ModelState["GlobalError"] != null && ViewData.ModelState["GlobalError"].Errors.Any())
+	{
+		<div class="form-group">
+			<span class="text-danger">@Html.ValidationMessageFor(x => x.GlobalError)</span>
+		</div>
+	}
+	
+	<form asp-action="Login" asp-controller="Account" asp-anti-forgery="true">
+		<div>
+			<div class="form-group">
+				<label asp-for="Name">Введите имя</label>
+				<input type="text" asp-for="Name"/>
+				<span asp-validation-for="Name" class="text-danger" />
+			</div>
+			<div class="form-group">
+				<label asp-for="Password">Введите пароль</label>
+				<input asp-for="Password" type="password"/>
+				<span asp-validation-for="Password" class="text-danger" />
+			</div>
+			<div class="form-group">
+				<input class="btn btn-secondary" type="submit" value="Войти" class="btn" />
+			</div>
+		</div>
+	</form>
+	
+</div>
