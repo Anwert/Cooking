@@ -26,7 +26,8 @@ select	scope_identity()
 			using (var conn = Connection)
 			{
 				return conn.QuerySingleOrDefault<User>($@"
-select	name		{nameof(User.Name)},
+select	[user]		{nameof(User.Id)},
+		name		{nameof(User.Name)},
 		password	{nameof(User.Password)}
 from	[user]
 where	[user] = @{nameof(id)}
@@ -39,7 +40,8 @@ where	[user] = @{nameof(id)}
 			using (var conn = Connection)
 			{
 				return conn.QuerySingleOrDefault<User>($@"
-select	name		{nameof(User.Name)},
+select	[user]		{nameof(User.Id)},
+		name		{nameof(User.Name)},
 		password	{nameof(User.Password)}
 from	[user]
 where	name = @{nameof(name)}
@@ -52,7 +54,8 @@ where	name = @{nameof(name)}
 			using (var conn = Connection)
 			{
 				return conn.Query<User>($@"
-select	name		{nameof(User.Name)},
+select	[user]		{nameof(User.Id)},
+		name		{nameof(User.Name)},
 		password	{nameof(User.Password)}
 from	[user]
 ");
@@ -66,7 +69,7 @@ from	[user]
 				conn.Execute($@"
 update	[user]
 set		name		= @{nameof(User.Name)},
-		password	= @{nameof(User.Password)},
+		password	= @{nameof(User.Password)}
 where	[user]		= @{nameof(user.Id)}
 ", user);
 			}

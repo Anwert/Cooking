@@ -39,7 +39,6 @@ namespace Cooking.Controllers
 					user = _userRepository.GetById(user_id);
  
 					await Authenticate(user); // аутентификация
- 
 					return RedirectToAction("Index", "Client");
 				}
 				
@@ -61,7 +60,7 @@ namespace Cooking.Controllers
 			if (ModelState.IsValid)
 			{
 				var user = _userRepository.GetByName(login_model.Name);
-				if (user != null)
+				if (user != null && login_model.Password == user.Password)
 				{
 					await Authenticate(user); // аутентификация
  
@@ -71,6 +70,13 @@ namespace Cooking.Controllers
 				ModelState.AddModelError("GlobalError", "Неверные имя пользователя или пароль.");
 			}
 			return View(login_model);
+		}
+		
+		public async Task<IActionResult> Logout()
+		{
+			await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+			
+			return RedirectToAction("Login", "Account");
 		}
 		
 		private async Task Authenticate(User user)

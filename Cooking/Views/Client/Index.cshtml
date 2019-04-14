@@ -1,14 +1,25 @@
-@model object
+@model IEnumerable<RecipeCategory>
+@{
+	ViewBag.Title	= "Recipe categories";
+}
 
-<!DOCTYPE html>
+<partial name="_MenuPartial" />
 
-<html>
-<head>
-	<title>title</title>
-</head>
-<body>
-<div>
-	  qweqwe
+<div class="container body-content">
+	<h2>Категории рецептов</h2>
+	
+	<p>
+		@Html.ActionLink("Создать новый рецепт", "CreateRecipe", "Client")
+	</p>
+	
+	<div>
+		@Html.ActionLink("Легкие рецепты", "EasyRecipes", "Client")
+	</div>
+	<div>
+		@Html.ActionLink("Средние рецепты", "MiddleRecipes", "Client")
+	</div>
+	<div>
+		@Html.ActionLink("Сложные рецепты", "HardRecipes", "Client")
+	</div>
+
 </div>
-</body>
-</html>

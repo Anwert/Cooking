@@ -1,0 +1,65 @@
+@model RecipeModel
+@{
+	ViewBag.Title	= "Edit recipe";
+}
+
+<partial name="_MenuPartial" />
+
+<div class="container body-content">
+	
+	<h2>Изменение рецепта</h2>
+	<br />
+	
+	@if(ViewData.ModelState["GlobalError"] != null && ViewData.ModelState["GlobalError"].Errors.Any())
+	{
+		<div class="form-group">
+			<span class="text-danger">@Html.ValidationMessageFor(x => x.GlobalError)</span>
+		</div>
+	}
+	
+	<form asp-action="EditRecipe" asp-controller="Client" asp-anti-forgery="true" enctype="multipart/form-data">
+		<input asp-for="Id" type="hidden" value="@Model.Id" />
+		<div>
+			<label asp-for="Name">Введите название</label><br/>
+			<input type="text" asp-for="Name"/>
+			<span asp-validation-for="Name" class="text-danger" />
+		</div>
+		<div>
+			<label asp-for="RecipeDescription">Введите описание</label><br/>
+			<textarea class="form-control" asp-for="RecipeDescription"></textarea>
+			<span asp-validation-for="RecipeDescription" class="text-danger"/>
+		</div>
+		<div>
+			<label asp-for="RecipeCategory">Выберите категорию</label>
+			<div>
+				@Html.DropDownListFor(model => model.RecipeCategory.Id, new SelectList(Model.RecipeCategories,
+					nameof(Recipe.RecipeCategory.Id), nameof(Recipe.RecipeCategory.Name)))
+			</div>
+		</div>
+		<div>
+			<label>Загрузить новую картинку</label>
+			<div>
+				<input  type="file" name="pic" accept="image/*"/>
+			</div>
+		</div>
+		<br/>
+		<div>
+			<input class="btn btn-secondary" type="submit" value="Изменить рецепт"/>
+			@switch(Model.RecipeCategory.Id)
+			{
+				case 1:
+					@Html.ActionLink(" Отмена", "EasyRecipes", "Client")
+					break;
+				case 2:
+					@Html.ActionLink(" Отмена", "MiddleRecipes", "Client")
+					break;
+				case 3:
+					@Html.ActionLink(" Отмена", "HardRecipes", "Client")
+					break;
+				default:
+					@Html.ActionLink(" Отмена", "Index", "Client")
+					break;
+			}		</div>
+	</form>
+	
+</div>

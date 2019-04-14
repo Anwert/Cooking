@@ -1,0 +1,98 @@
+@model IEnumerable<Recipe>
+@{
+	ViewBag.Title	= "Middle Recipes";
+}
+
+<partial name="_MenuPartial" />
+
+<div class="container body-content">
+	
+	<p>Отсортировать по: 
+		@Html.ActionLink("Рейтингу", "SortRecipesByRating", "Client", new { category = 2 }) |
+		@Html.ActionLink("Названию", "SortRecipesByName", "Client", new { category = 2 }) |
+		@Html.ActionLink("Дате добавления", "SortRecipesByAddDate", "Client", new { category = 2 }) |
+		@Html.ActionLink("Дате изменения", "SortRecipesByChangeDate", "Client", new { category = 2 })
+	</p>
+	
+	<h2>Средние рецепты</h2>
+	
+	@Html.ActionLink("Назад", "Index", "Client")
+	
+	@foreach(var recipe in Model)
+	{
+		if(recipe.Creator.Name == User.Identity.Name)
+		{
+			<div class="form-group">
+				@using (Html.BeginForm("DeleteRecipe", "Client", FormMethod.Post))
+				{
+				 <input type="button" class="btn btn-outline-info btn-sm" value="Редактировать"
+						onclick="location.href='@Url.Action("EditRecipe", "Client", new { id = recipe.Id})'" />
+				 <input type="hidden" id="id" name="id" value=@recipe.Id>
+				 <input type="submit" class="btn btn-outline-danger btn-sm" value="Удалить" />
+				}
+			</div> 
+		}
+		else
+		{
+			if (recipe.UsersScore != null)
+			{
+				<div class="form-group">
+					@using (Html.BeginForm("EditScoreRecipe", "Client", FormMethod.Post))
+					{
+						var scores = new List<SelectListItem>
+						{
+							new SelectListItem { Value = "1", Text = "1" },
+							new SelectListItem { Value = "2", Text = "2" },
+							new SelectListItem { Value = "3", Text = "3" },
+							new SelectListItem { Value = "4", Text = "4" },
+							new SelectListItem { Value = "5", Text = "5" }
+						};
+						scores[recipe.UsersScore.Value - 1].Selected = true;
+						
+						<input type="hidden" id="recipe_id" name="recipe_id" value=@recipe.Id>
+						<select id="score", name="score" asp-items="scores"></select> 
+						<input type="submit" class="btn btn-outline-info btn-sm" value="Изменить оценку" />
+					}
+				</div>
+			}
+			else
+			{
+				<div class="form-group">
+					@using (Html.BeginForm("ScoreRecipe", "Client", FormMethod.Post))
+					{
+						var scores = new List<SelectListItem>
+						{
+							new SelectListItem { Value = "1", Text = "1" },
+							new SelectListItem { Value = "2", Text = "2" },
+							new SelectListItem { Value = "3", Text = "3" },
+							new SelectListItem { Value = "4", Text = "4" },
+							new SelectListItem { Value = "5", Text = "5" }
+						};
+						scores[4].Selected = true;
+						
+						<input type="hidden" id="recipe_id" name="recipe_id" value=@recipe.Id>
+						<select id="score", name="score" asp-items="scores"></select> 
+						<input type="submit" class="btn btn-outline-info btn-sm" value="Добавить оценку" />
+					}
+				</div>
+			}
+		}
+		<h4>@recipe.Name</h4>
+		if (recipe.GetScore() != null)
+		{
+			<h4>Рейтинг: @recipe.GetScore()</h4>
+		}
+		else
+		{
+			<h4>Рейтинг: никто еще не оценивал этот рецепт</h4>
+		}
+		<img class="img-responsive full-width" src="data:image/jpeg;base64,@Convert.ToBase64String(recipe.Picture)" />
+		<h5>Пользователь: @recipe.Creator.Name</h5>
+		<h5>Дата добавления: @recipe.AddDate</h5>
+		<h5>Дата последнего изменения: @recipe.ChangeDate</h5>
+		
+		<h5>Описание:</h5>
+		<p class="txt">@recipe.RecipeDescription</p>
+	}
+	
+</div>
