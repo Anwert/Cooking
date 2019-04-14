@@ -40,40 +40,13 @@ namespace Cooking.Controllers
 			return View(recipe_categories);
 		}
 		
-		public IActionResult SortRecipesByRating(int category)
-		{
-			var recipes = _recipeRepository.GetByCategoryId(category)?.OrderByDescending(x => x.GetScore());
-			
-			return ReturnRecipesViewByCategoryAndRecipes(category, FillRecipesWithCreatorsAndRatings(recipes));
-		}
-		
-		public IActionResult SortRecipesByName(int category)
-		{
-			var recipes = _recipeRepository.GetByCategoryId(category)?.OrderBy(x => x.Name);
-			
-			return ReturnRecipesViewByCategoryAndRecipes(category, FillRecipesWithCreatorsAndRatings(recipes));
-		}
-		
-		public IActionResult SortRecipesByAddDate(int category)
-		{
-			var recipes = _recipeRepository.GetByCategoryId(category)?.OrderByDescending(x => x.AddDate);
-			
-			return ReturnRecipesViewByCategoryAndRecipes(category, FillRecipesWithCreatorsAndRatings(recipes));
-		}
-		
-		public IActionResult SortRecipesByChangeDate(int category)
-		{
-			var recipes = _recipeRepository.GetByCategoryId(category)?.OrderByDescending(x => x.ChangeDate);
-			
-			return ReturnRecipesViewByCategoryAndRecipes(category, FillRecipesWithCreatorsAndRatings(recipes));
-		}
-		
 		[HttpGet]
-		public IActionResult CreateRecipe()
+		public IActionResult CreateRecipe(string order_by = null)
 		{
 			var recipe_model = new RecipeModel
 			{
-				RecipeCategories = _recipeCategoryRepository.Get()
+				RecipeCategories = _recipeCategoryRepository.Get(),
+				OrderBy = order_by
 			};
 			
 			return View(recipe_model);
@@ -110,31 +83,38 @@ namespace Cooking.Controllers
 			return View(recipe_model);
 		}
 		
-		public IActionResult EasyRecipes()
+		public IActionResult EasyRecipes(string order_by = null)
 		{
 			var recipes = FillRecipesWithCreatorsAndRatings( _recipeRepository.GetByCategoryId(EASY_RECIPRE_CATEGORY_ID));
-
-			return View(recipes);
+			
+			ViewBag.OrderBy = order_by;
+			
+			return View(OrderRecipes(recipes, order_by));
 		}
 		
-		public IActionResult MiddleRecipes()
+		public IActionResult MiddleRecipes(string order_by = null)
 		{
 			var recipes = FillRecipesWithCreatorsAndRatings( _recipeRepository.GetByCategoryId(MIDDLE_RECIPRE_CATEGORY_ID));
 			
-			return View(recipes);
+			ViewBag.OrderBy = order_by;
+			
+			return View(OrderRecipes(recipes, order_by));
 		}
 		
-		public IActionResult HardRecipes()
+		public IActionResult HardRecipes(string order_by = null)
 		{
 			var recipes = FillRecipesWithCreatorsAndRatings( _recipeRepository.GetByCategoryId(HARD_RECIPRE_CATEGORY_ID));
 			
-			return View(recipes);
+			ViewBag.OrderBy = order_by;
+			
+			return View(OrderRecipes(recipes, order_by));
 		}
 		
 		[HttpGet]
-		public IActionResult EditRecipe(int id)
+		public IActionResult EditRecipe(int id, string order_by = null)
 		{
 			var recipe_model = CastRecipeToModel(_recipeRepository.GetById(id));
+			recipe_model.OrderBy = order_by;
 			
 			return View(recipe_model);
 		}
@@ -168,7 +148,7 @@ namespace Cooking.Controllers
 					recipe.ChangeDate = DateTime.Now;
 					_recipeRepository.Update(recipe);
 					
-					return RedirectToRecipes(recipe.Id);
+					return RedirectToRecipes(recipe.Id, recipe_model.OrderBy);
 				}
 				
 				ModelState.AddModelError("GlobalError", "Такой рецепт уже существует.");
@@ -178,16 +158,16 @@ namespace Cooking.Controllers
 		}
 		
 		[HttpPost]
-		public IActionResult DeleteRecipe(int id)
+		public IActionResult DeleteRecipe(int id, string order_by = null)
 		{
 			var recipe = _recipeRepository.GetById(id);
 			var category = recipe.RecipeCategory.Id;
 			_recipeRepository.Delete(id);
 			
-			return RedirectToRecipesByCategory(category);
+			return RedirectToRecipesByCategory(category, order_by);
 		}
 		
-		public IActionResult ScoreRecipe(int recipe_id, string score)
+		public IActionResult ScoreRecipe(int recipe_id, string score, string order_by = null)
 		{
 			int.TryParse(score, out var score_int);
 			var recipe_rating = new RecipeRating
@@ -198,10 +178,10 @@ namespace Cooking.Controllers
 			};
 			_recipeRatingRepository.Add(recipe_rating);
 			
-			return RedirectToRecipes(recipe_id);
+			return RedirectToRecipes(recipe_id, order_by);
 		}
 		
-		public IActionResult EditScoreRecipe(int recipe_id, string score)
+		public IActionResult EditScoreRecipe(int recipe_id, string score, string order_by = null)
 		{
 			int.TryParse(score, out var score_int);
 			var recipe_rating = new RecipeRating
@@ -212,42 +192,49 @@ namespace Cooking.Controllers
 			};
 			_recipeRatingRepository.UpdateByUserAndRecipe(recipe_rating);
 			
-			return RedirectToRecipes(recipe_id);
+			return RedirectToRecipes(recipe_id, order_by);
 		}
 		
-		private IActionResult RedirectToRecipes(int recipe_id)
+		private IEnumerable<Recipe> OrderRecipes(IEnumerable<Recipe> recipes, string order_by = null)
+		{
+			if (recipes != null)
+			{
+				switch (order_by)
+				{
+					case "rating":
+						return recipes.OrderByDescending(x => x.GetScore());
+					case "name":
+						return recipes.OrderBy(x => x.Name);
+					case "add_date":
+						return recipes.OrderByDescending(x => x.AddDate);
+					case "change_date":
+						return recipes.OrderByDescending(x => x.ChangeDate);
+					default:
+						return recipes.OrderBy(x => x.AddDate);
+				}
+			}
+			return recipes;
+		}
+		
+		private IActionResult RedirectToRecipes(int recipe_id, string order_by = null)
 		{
 			var recipe = _recipeRepository.GetById(recipe_id);
-			return RedirectToRecipesByCategory(recipe.RecipeCategory.Id);
+			
+			return RedirectToRecipesByCategory(recipe.RecipeCategory.Id, order_by);
 		}
 		
-		private IActionResult RedirectToRecipesByCategory(int category)
+		private IActionResult RedirectToRecipesByCategory(int category, string order_by = null)
 		{
 			switch (category)
 			{
 				case 1:
-					return RedirectToAction("EasyRecipes");
+					return RedirectToAction("EasyRecipes", new { order_by });
 				case 2:
-					return RedirectToAction("MiddleRecipes");
+					return RedirectToAction("MiddleRecipes", new { order_by });
 				case 3:
-					return RedirectToAction("HardRecipes");
+					return RedirectToAction("HardRecipes", new { order_by });
 				default:
-					return RedirectToAction("Index");
-			}
-		}
-		
-		private IActionResult ReturnRecipesViewByCategoryAndRecipes(int category, IEnumerable<Recipe> recipes)
-		{
-			switch (category)
-			{
-				case 1:
-					return View("EasyRecipes", recipes);
-				case 2:
-					return View("MiddleRecipes", recipes);
-				case 3:
-					return View("HardRecipes", recipes);
-				default:
-					return View("Index");
+					return RedirectToAction("Index", new { order_by });
 			}
 		}
 		

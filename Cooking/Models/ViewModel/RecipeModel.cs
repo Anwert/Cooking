@@ -21,6 +21,8 @@ namespace Cooking.Models.ViewModel
 		
 		public byte[] Picture { get; set; }
 		
+		public string OrderBy { get; set; }
+		
 		public string GlobalError { get; set; }
 	}
 }

@@ -19,6 +19,7 @@
 	
 	<form asp-action="EditRecipe" asp-controller="Client" asp-anti-forgery="true" enctype="multipart/form-data">
 		<input asp-for="Id" type="hidden" value="@Model.Id" />
+		<input asp-for="OrderBy" type="hidden" value="@Model.OrderBy" />
 		<div>
 			<label asp-for="Name">Введите название</label><br/>
 			<input type="text" asp-for="Name"/>
@@ -48,18 +49,19 @@
 			@switch(Model.RecipeCategory.Id)
 			{
 				case 1:
-					@Html.ActionLink(" Отмена", "EasyRecipes", "Client")
+					@Html.ActionLink(" Отмена", "EasyRecipes", "Client", new { order_by = Model.OrderBy })
 					break;
 				case 2:
-					@Html.ActionLink(" Отмена", "MiddleRecipes", "Client")
+					@Html.ActionLink(" Отмена", "MiddleRecipes", "Client", new { order_by = Model.OrderBy })
 					break;
 				case 3:
-					@Html.ActionLink(" Отмена", "HardRecipes", "Client")
+					@Html.ActionLink(" Отмена", "HardRecipes", "Client", new { order_by = Model.OrderBy })
 					break;
 				default:
-					@Html.ActionLink(" Отмена", "Index", "Client")
+					@Html.ActionLink(" Отмена", "Index", "Client", new { order_by = Model.OrderBy })
 					break;
-			}		</div>
+			}
+		</div>
 	</form>
 	
 </div>

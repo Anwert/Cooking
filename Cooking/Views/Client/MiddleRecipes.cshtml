@@ -1,6 +1,8 @@
 @model IEnumerable<Recipe>
 @{
 	ViewBag.Title	= "Middle Recipes";
+	
+	var order_by = ViewBag.OrderBy;
 }
 
 <partial name="_MenuPartial" />
@@ -8,10 +10,10 @@
 <div class="container body-content">
 	
 	<p>Отсортировать по: 
-		@Html.ActionLink("Рейтингу", "SortRecipesByRating", "Client", new { category = 2 }) |
-		@Html.ActionLink("Названию", "SortRecipesByName", "Client", new { category = 2 }) |
-		@Html.ActionLink("Дате добавления", "SortRecipesByAddDate", "Client", new { category = 2 }) |
-		@Html.ActionLink("Дате изменения", "SortRecipesByChangeDate", "Client", new { category = 2 })
+		@Html.ActionLink("Рейтингу", "MiddleRecipes", "Client", new { order_by = "rating" }) |
+		@Html.ActionLink("Названию", "MiddleRecipes", "Client", new { order_by = "name" }) |
+		@Html.ActionLink("Дате добавления", "MiddleRecipes", "Client", new { order_by = "add_date" }) |
+		@Html.ActionLink("Дате изменения", "MiddleRecipes", "Client", new { order_by = "change_date" })
 	</p>
 	
 	<h2>Средние рецепты</h2>
@@ -26,8 +28,9 @@
 				@using (Html.BeginForm("DeleteRecipe", "Client", FormMethod.Post))
 				{
 				 <input type="button" class="btn btn-outline-info btn-sm" value="Редактировать"
-						onclick="location.href='@Url.Action("EditRecipe", "Client", new { id = recipe.Id})'" />
-				 <input type="hidden" id="id" name="id" value=@recipe.Id>
+						onclick="location.href='@Url.Action("EditRecipe", "Client", new { id = recipe.Id, order_by })'" />
+					<input type="hidden" id="id" name="id" value=@recipe.Id>
+					<input type="hidden" id="order_by" name="order_by" value=@order_by>
 				 <input type="submit" class="btn btn-outline-danger btn-sm" value="Удалить" />
 				}
 			</div> 
@@ -51,6 +54,7 @@
 						
 						<input type="hidden" id="recipe_id" name="recipe_id" value=@recipe.Id>
 						<select id="score", name="score" asp-items="scores"></select> 
+						<input type="hidden" id="order_by" name="order_by" value=@order_by>
 						<input type="submit" class="btn btn-outline-info btn-sm" value="Изменить оценку" />
 					}
 				</div>
@@ -72,6 +76,7 @@
 						
 						<input type="hidden" id="recipe_id" name="recipe_id" value=@recipe.Id>
 						<select id="score", name="score" asp-items="scores"></select> 
+						<input type="hidden" id="order_by" name="order_by" value=@order_by>
 						<input type="submit" class="btn btn-outline-info btn-sm" value="Добавить оценку" />
 					}
 				</div>
